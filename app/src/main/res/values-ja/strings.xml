@@ -1380,4 +1380,26 @@ mDNSアドレス: .localホスト名を使用し、IPを知らなくても同じ
   <string name="setting_display_page_background_effect_type">背景効果の種類</string>
   <string name="setting_display_page_background_effect_blur">ぼかし</string>
   <string name="setting_display_page_background_effect_glass">ガラス</string>
+  <!-- Digital assistant / terminal additions -->
+  <string name="setting_tts_page_temperature">温度</string>
+  <string name="setting_tts_page_temperature_description">音声のランダム性を調整します（0.0〜1.0、値が大きいほど表現豊かになります）</string>
+  <string name="setting_tts_page_fish_audio_speed_description">読み上げ速度（0.5〜2.0、1.0 が標準）</string>
+  <string name="theme_name_claude">Claude</string>
+  <string name="safe_mode_enter_app">アプリを開く</string>
+  <string name="workspace_terminal_tab">ターミナル %1$d</string>
+  <string name="workspace_terminal_new_tab">新しいターミナルタブ</string>
+  <string name="workspace_terminal_close_tab">ターミナル %1$d を閉じる</string>
+  <string name="workspace_terminal_no_tabs">開いているターミナルタブはありません</string>
+  <string name="assistant_page_context_message_limit_too_small">コンテキストメッセージの上限は %1$d 未満にはできません。%1$d にリセットされました。</string>
+  <string name="setting_page_preferences_assistant_service">システムアシスタント</string>
+  <string name="setting_page_preferences_assistant_service_desc">既定のデジタルアシスタントとフローティングバブルを設定します</string>
+  <string name="setting_page_assistant_service_title">既定のアシスタントアプリ</string>
+  <string name="setting_page_assistant_service_desc">RikkaHub をシステムの既定のデジタルアシスタントに設定します</string>
+  <string name="setting_page_assistant_service_status_enabled">既定のアシスタントに設定済み</string>
+  <string name="setting_page_assistant_service_status_disabled">既定のアシスタントではありません</string>
+  <string name="setting_page_assistant_service_set_default">アシスタント設定を開く</string>
+  <string name="setting_page_assistant_service_overlay_title">他のアプリの上に重ねて表示</string>
+  <string name="setting_page_assistant_service_overlay_desc">フローティングバブルを画面に常駐させ、進行状況を表示するために必要です</string>
+  <string name="setting_page_assistant_service_overlay_granted">権限が許可されています</string>
+  <string name="setting_page_assistant_service_overlay_grant">オーバーレイ権限を許可</string>
 </resources>

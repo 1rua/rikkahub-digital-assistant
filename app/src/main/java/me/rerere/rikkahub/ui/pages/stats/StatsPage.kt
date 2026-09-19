@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.rerere.rikkahub.R
@@ -50,7 +51,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
-import java.util.Locale
 
 @Composable
 fun StatsPage(vm: StatsVM = koinViewModel()) {
@@ -148,6 +148,7 @@ private fun ChatHeatmap(conversationsPerDay: Map<LocalDate, Int>) {
         .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
         .minusWeeks(52)
 
+    val systemLocale = LocalLocale.current.platformLocale
     val numWeeks = 53
     val activeCounts = conversationsPerDay.values.filter { it > 0 }.sorted()
     val q1 = activeCounts.getOrElse((activeCounts.size * 0.25).toInt()) { 1 }
@@ -219,7 +220,7 @@ private fun ChatHeatmap(conversationsPerDay: Map<LocalDate, Int>) {
                                 text = if (labelDate.monthValue == 1) {
                                     labelDate.year.toString()
                                 } else {
-                                    labelDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                    labelDate.month.getDisplayName(TextStyle.SHORT, systemLocale)
                                 },
                                 modifier = Modifier.wrapContentWidth(unbounded = true),
                                 style = MaterialTheme.typography.labelSmall,

@@ -1380,4 +1380,26 @@ mDNS 주소: .local 호스트네임을 사용하며, IP를 몰라도 같은 네�
   <string name="setting_display_page_background_effect_type">배경 효과 유형</string>
   <string name="setting_display_page_background_effect_blur">블러</string>
   <string name="setting_display_page_background_effect_glass">글래스</string>
+  <!-- Digital assistant / terminal additions -->
+  <string name="setting_tts_page_temperature">온도</string>
+  <string name="setting_tts_page_temperature_description">음성의 무작위성을 조절합니다 (0.0 - 1.0, 높을수록 표현이 풍부해집니다)</string>
+  <string name="setting_tts_page_fish_audio_speed_description">말하기 속도 (0.5 - 2.0, 1.0이 기본)</string>
+  <string name="theme_name_claude">Claude</string>
+  <string name="safe_mode_enter_app">앱 열기</string>
+  <string name="workspace_terminal_tab">터미널 %1$d</string>
+  <string name="workspace_terminal_new_tab">새 터미널 탭</string>
+  <string name="workspace_terminal_close_tab">터미널 %1$d 닫기</string>
+  <string name="workspace_terminal_no_tabs">열린 터미널 탭이 없습니다</string>
+  <string name="assistant_page_context_message_limit_too_small">컨텍스트 메시지 한도는 %1$d보다 작을 수 없습니다. %1$d(으)로 초기화되었습니다.</string>
+  <string name="setting_page_preferences_assistant_service">시스템 어시스턴트</string>
+  <string name="setting_page_preferences_assistant_service_desc">기본 디지털 어시스턴트와 플로팅 버블을 설정합니다</string>
+  <string name="setting_page_assistant_service_title">기본 어시스턴트 앱</string>
+  <string name="setting_page_assistant_service_desc">RikkaHub를 시스템 기본 디지털 어시스턴트로 설정합니다</string>
+  <string name="setting_page_assistant_service_status_enabled">기본 어시스턴트로 설정됨</string>
+  <string name="setting_page_assistant_service_status_disabled">기본 어시스턴트 아님</string>
+  <string name="setting_page_assistant_service_set_default">어시스턴트 설정 열기</string>
+  <string name="setting_page_assistant_service_overlay_title">다른 앱 위에 표시</string>
+  <string name="setting_page_assistant_service_overlay_desc">플로팅 버블이 화면에 남아 진행 상황을 표시하는 데 필요합니다</string>
+  <string name="setting_page_assistant_service_overlay_granted">권한 허용됨</string>
+  <string name="setting_page_assistant_service_overlay_grant">오버레이 권한 허용</string>
 </resources>

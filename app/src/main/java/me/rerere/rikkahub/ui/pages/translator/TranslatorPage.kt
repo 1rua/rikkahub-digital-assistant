@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dokar.sonner.ToastType
@@ -227,6 +228,7 @@ private fun LanguageSelector(
 
     @Composable
     fun getLanguageDisplayName(locale: Locale): String {
+        val systemLocale = LocalLocale.current.platformLocale
         return when (locale) {
             Locale.SIMPLIFIED_CHINESE -> stringResource(R.string.language_simplified_chinese)
             Locale.ENGLISH -> stringResource(R.string.language_english)
@@ -237,7 +239,7 @@ private fun LanguageSelector(
             Locale.GERMAN -> stringResource(R.string.language_german)
             Locale.ITALIAN -> stringResource(R.string.language_italian)
             Locale("es", "ES") -> stringResource(R.string.language_spanish)
-            else -> locale.getDisplayLanguage(Locale.getDefault())
+            else -> locale.getDisplayLanguage(systemLocale)
         }
     }
 
