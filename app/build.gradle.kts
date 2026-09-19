@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.Packaging
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -53,6 +54,7 @@ android {
             val localProperties = Properties()
             val localPropertiesFile = rootProject.file("local.properties")
 
+            var configured = false
             if (localPropertiesFile.exists()) {
                 localProperties.load(FileInputStream(localPropertiesFile))
 
@@ -68,6 +70,17 @@ android {
                     storePassword = storePasswordValue
                     keyAlias = keyAliasValue
                     keyPassword = keyPasswordValue
+                    configured = true
+                }
+            }
+            if (!configured) {
+                // Fallback to the local debug keystore so a release APK can still be built and installed
+                val defaultDebugKeystore = File(System.getProperty("user.home"), ".android/debug.keystore")
+                if (defaultDebugKeystore.exists()) {
+                    storeFile = defaultDebugKeystore
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
                 }
             }
         }
