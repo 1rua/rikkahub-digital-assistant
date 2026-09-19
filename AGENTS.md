@@ -12,7 +12,11 @@ Built with Jetpack Compose, Kotlin, and follows Material Design 3 principles.
 ./gradlew assembleDebug          # 构建 Debug APK
 ./gradlew test                   # 运行所有模块的 JVM 单元测试
 ./gradlew lint                   # 运行 Android Lint
+./scripts/fetch-apk.sh           # 下载最近一次成功 CI 构建的 APK（--watch 等待进行中的构建，--new 等待新构建，--release 取 Nightly Release）
 ```
+
+`scripts/hooks/pre-push` 会在 push 到 origin 的 master/main 后，自动在后台等待 GitHub Actions 构建完成并下载 APK；
+通过 `./scripts/install-hooks.sh` 安装，日志见 `.git/rikkahub-apk-autodownload.log`。
 
 ## Module Structure
 
