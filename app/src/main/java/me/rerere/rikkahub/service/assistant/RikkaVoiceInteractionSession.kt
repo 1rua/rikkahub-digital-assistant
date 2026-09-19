@@ -3,6 +3,7 @@ package me.rerere.rikkahub.service.assistant
 import android.content.Context
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,19 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.launch
 import me.rerere.ai.ui.UIMessagePart
 import me.rerere.hugeicons.HugeIcons
@@ -53,46 +66,118 @@ import me.rerere.rikkahub.ui.theme.RikkahubTheme
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+private const val TAG = "RikkaVoiceSession"
+
+private class SessionLifecycleOwner : LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
+    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val store = ViewModelStore()
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+
+    init {
+        savedStateRegistryController.performRestore(null)
+        lifecycleRegistry.currentState = Lifecycle.State.INITIALIZED
+    }
+
+    override val lifecycle: Lifecycle get() = lifecycleRegistry
+    override val viewModelStore: ViewModelStore get() = store
+    override val savedStateRegistry: SavedStateRegistry get() = savedStateRegistryController.savedStateRegistry
+
+    fun handleLifecycleEvent(event: Lifecycle.Event) {
+        lifecycleRegistry.handleLifecycleEvent(event)
+    }
+
+    fun destroy() {
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        store.clear()
+    }
+}
+
 class RikkaVoiceInteractionSession(context: Context) : VoiceInteractionSession(context), KoinComponent {
     private val chatService by inject<ChatService>()
     private val appScope by inject<AppScope>()
+    private val sessionLifecycleOwner = SessionLifecycleOwner()
+
+    override fun onCreate() {
+        super.onCreate()
+        runCatching {
+            sessionLifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        }.onFailure { e ->
+            Log.e(TAG, "Error in onCreate", e)
+        }
+    }
 
     override fun onCreateContentView(): View {
-        return ComposeView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            setContent {
-                RikkahubTheme {
-                    SessionBottomBar(
-                        onDismiss = { hide() },
-                        onSendMessage = { text ->
-                            val currentContext = context
-                            appScope.launch {
-                                val convId = AssistConversationManager.getOrCreateAssistConversationId(currentContext)
-                                chatService.sendMessage(
-                                    conversationId = convId,
-                                    content = listOf(UIMessagePart.Text(text)),
-                                    answer = true
-                                )
-                                hide()
-                                // Show global floating bubble
-                                AssistBubbleManager.showBubble(currentContext, convId)
+        return runCatching {
+            ComposeView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
+                setViewTreeLifecycleOwner(sessionLifecycleOwner)
+                setViewTreeViewModelStoreOwner(sessionLifecycleOwner)
+                setViewTreeSavedStateRegistryOwner(sessionLifecycleOwner)
+                setContent {
+                    RikkahubTheme {
+                        SessionBottomBar(
+                            onDismiss = { hide() },
+                            onSendMessage = { text ->
+                                val currentContext = context
+                                appScope.launch {
+                                    val convId = AssistConversationManager.getOrCreateAssistConversationId(currentContext)
+                                    chatService.sendMessage(
+                                        conversationId = convId,
+                                        content = listOf(UIMessagePart.Text(text)),
+                                        answer = true
+                                    )
+                                    hide()
+                                    // Show global floating bubble
+                                    AssistBubbleManager.showBubble(currentContext, convId)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
+        }.getOrElse { e ->
+            Log.e(TAG, "Failed to create content view", e)
+            hide()
+            View(context)
         }
     }
 
     override fun onShow(args: Bundle?, showFlags: Int) {
         super.onShow(args, showFlags)
-        window?.window?.let { win ->
-            win.setGravity(Gravity.BOTTOM)
-            win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-            win.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        runCatching {
+            sessionLifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
+            sessionLifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            window?.window?.let { win ->
+                win.setGravity(Gravity.BOTTOM)
+                win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+                win.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            }
+        }.onFailure { e ->
+            Log.e(TAG, "Error in onShow", e)
+            hide()
+        }
+    }
+
+    override fun onHide() {
+        super.onHide()
+        runCatching {
+            sessionLifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            sessionLifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        }.onFailure { e ->
+            Log.e(TAG, "Error in onHide", e)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        runCatching {
+            sessionLifecycleOwner.destroy()
+        }.onFailure { e ->
+            Log.e(TAG, "Error in onDestroy", e)
         }
     }
 }
