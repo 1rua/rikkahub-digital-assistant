@@ -14,3 +14,4 @@ local.properties
 .codebuddy/memory/
 build-logic/bin/
 .attach_pid*
+/dist

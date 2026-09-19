@@ -11,7 +11,7 @@
 # 可选参数：
 #   --workflow <file>   指定 workflow 文件（默认 ci.yml；可用 daily-build.yml）
 #   --artifact <name>   指定 artifact 名称（默认 rikkahub-debug-apk）
-#   --out <dir>         输出目录（默认 ~/Downloads/rikkahub）
+#   --out <dir>         输出目录（默认 <项目根>/dist）
 #   --timeout <min>     单次等待的最长分钟数（默认 90）
 #   --poll <sec>        轮询间隔秒数（默认 20）
 #   --notify            结束时发送桌面通知（需要 notify-send）
@@ -28,7 +28,7 @@ SOURCE=artifact          # artifact | release
 WORKFLOW=ci.yml
 ARTIFACT=rikkahub-debug-apk
 RELEASE_TAG=nightly
-OUT_DIR="${HOME}/Downloads/rikkahub"
+OUT_DIR="$ROOT_DIR/dist"
 TIMEOUT_MIN=90
 NEW_RUN_TIMEOUT_MIN="${RIKKAHUB_NEW_RUN_TIMEOUT_MIN:-10}"  # --new 模式下等待"新构建出现"的最长时间
 POLL=20
