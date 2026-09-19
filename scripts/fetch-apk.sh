@@ -104,7 +104,7 @@ wait_run() {
     if [ "$(date +%s)" -gt "$deadline" ]; then
       return 11
     fi
-    log "构建进行中… run #$(jq -r '.number' <<< "$RUN_INFO")（$(date '+%H:%M:%S') 检查）"
+    log "构建进行中… run #$(jq -r '.number // "?"' <<< "$RUN_INFO")（$(date '+%H:%M:%S') 检查）"
     sleep "$POLL"
   done
 }

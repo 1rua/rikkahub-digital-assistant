@@ -11,3 +11,6 @@ local.properties
 .cursor
 .history
 .kotlin
+.codebuddy/memory/
+build-logic/bin/
+.attach_pid*
