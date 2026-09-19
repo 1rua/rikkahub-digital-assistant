@@ -3,6 +3,7 @@
   xmlns:tools="http://schemas.android.com/tools">
 
   <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission
@@ -160,6 +161,32 @@
         android:value="androidx.startup"
         tools:node="remove" />
     </provider>
+      <service
+      android:name=".service.assistant.RikkaVoiceInteractionService"
+      android:exported="true"
+      android:label="@string/setting_page_preferences_assistant_service"
+      android:permission="android.permission.BIND_VOICE_INTERACTION">
+      <intent-filter>
+        <action android:name="android.service.voice.VoiceInteractionService" />
+      </intent-filter>
+      <meta-data
+        android:name="android.voice_interaction"
+        android:resource="@xml/voice_interaction_service" />
+    </service>
+
+    <service
+      android:name=".service.assistant.RikkaVoiceInteractionSessionService"
+      android:exported="true"
+      android:permission="android.permission.BIND_VOICE_INTERACTION" />
+
+    <service
+      android:name=".service.assistant.RikkaRecognitionService"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.speech.RecognitionService" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </service>
   </application>
 
 </manifest>

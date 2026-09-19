@@ -1384,4 +1384,15 @@ mDNS 地址：使用 .local 主机名，同一网络中的其他设备可通过�
   <string name="setting_display_page_background_effect_type">背景效果类型</string>
   <string name="setting_display_page_background_effect_blur">模糊</string>
   <string name="setting_display_page_background_effect_glass">玻璃</string>
+  <string name="setting_page_preferences_assistant_service">系统数字助手</string>
+  <string name="setting_page_preferences_assistant_service_desc">配置系统默认数字助手与悬浮小球</string>
+  <string name="setting_page_assistant_service_title">默认数字助手应用</string>
+  <string name="setting_page_assistant_service_desc">将 RikkaHub 设置为系统默认数字助手，支持电源键或手势唤起</string>
+  <string name="setting_page_assistant_service_status_enabled">已设为默认助手</string>
+  <string name="setting_page_assistant_service_status_disabled">未设为默认助手</string>
+  <string name="setting_page_assistant_service_set_default">前往设置默认数字助手</string>
+  <string name="setting_page_assistant_service_overlay_title">悬浮窗权限（显示在应用上层）</string>
+  <string name="setting_page_assistant_service_overlay_desc">发送消息后悬浮小球停靠在屏幕边缘展示进度所必需</string>
+  <string name="setting_page_assistant_service_overlay_granted">已授权悬浮窗权限</string>
+  <string name="setting_page_assistant_service_overlay_grant">授予悬浮窗权限</string>
 </resources>

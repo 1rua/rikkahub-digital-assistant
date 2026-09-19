@@ -1,4 +1,5 @@
 package me.rerere.rikkahub
+import me.rerere.rikkahub.ui.pages.setting.SettingPreferencesAssistantPage
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -428,6 +429,10 @@ class RouteActivity : ComponentActivity() {
                                 SettingPreferencesNetworkPage()
                             }
 
+                            entry<Screen.SettingPreferencesAssistant> {
+                                SettingPreferencesAssistantPage()
+                            }
+
                             entry<Screen.SettingProvider> {
                                 SettingProviderPage()
                             }
@@ -659,6 +664,8 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data object SettingPreferencesNetwork : Screen
+    @Serializable
+    data object SettingPreferencesAssistant : Screen
 
     @Serializable
     data object SettingProvider : Screen

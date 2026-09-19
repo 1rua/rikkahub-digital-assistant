@@ -1388,4 +1388,15 @@
   <string name="setting_display_page_background_effect_type">Background effect type</string>
   <string name="setting_display_page_background_effect_blur">Blur</string>
   <string name="setting_display_page_background_effect_glass">Glass</string>
+  <string name="setting_page_preferences_assistant_service">System Assistant</string>
+  <string name="setting_page_preferences_assistant_service_desc">Configure default digital assistant and floating bubble</string>
+  <string name="setting_page_assistant_service_title">Default Assistant App</string>
+  <string name="setting_page_assistant_service_desc">Set RikkaHub as the system default digital assistant</string>
+  <string name="setting_page_assistant_service_status_enabled">Set as Default Assistant</string>
+  <string name="setting_page_assistant_service_status_disabled">Not Default Assistant</string>
+  <string name="setting_page_assistant_service_set_default">Open Assistant Settings</string>
+  <string name="setting_page_assistant_service_overlay_title">Display Over Other Apps</string>
+  <string name="setting_page_assistant_service_overlay_desc">Required for the floating bubble to stay on screen and show progress</string>
+  <string name="setting_page_assistant_service_overlay_granted">Permission Granted</string>
+  <string name="setting_page_assistant_service_overlay_grant">Grant Overlay Permission</string>
 </resources>
