@@ -11,7 +11,7 @@
 # 可选参数：
 #   --workflow <file>   指定 workflow 文件（默认 ci.yml；可用 daily-build.yml）
 #   --artifact <name>   指定 artifact 名称（默认 rikkahub-debug-apk）
-#   --out <dir>         输出目录（默认 <项目根>/dist）
+#   --out <dir>         输出目录（默认 app/build/outputs/apk/debug，与本地 Gradle 产物同目录）
 #   --timeout <min>     单次等待的最长分钟数（默认 90）
 #   --poll <sec>        轮询间隔秒数（默认 20）
 #   --notify            结束时发送桌面通知（需要 notify-send）
@@ -28,7 +28,7 @@ SOURCE=artifact          # artifact | release
 WORKFLOW=ci.yml
 ARTIFACT=rikkahub-debug-apk
 RELEASE_TAG=nightly
-OUT_DIR="$ROOT_DIR/dist"
+OUT_DIR=""               # 留空表示按来源自动落到本地 Gradle 产物目录
 TIMEOUT_MIN=90
 NEW_RUN_TIMEOUT_MIN="${RIKKAHUB_NEW_RUN_TIMEOUT_MIN:-10}"  # --new 模式下等待"新构建出现"的最长时间
 POLL=20
@@ -80,7 +80,16 @@ if [ -z "$REPO" ]; then
   url="${url%.git}"; url="${url#*github.com}"; url="${url#:}"; url="${url#/}"
   REPO="$url"
 fi
+if [ -z "$OUT_DIR" ]; then
+  # 默认与本地 Gradle 编译输出放在同一个目录
+  if [ "$SOURCE" = "release" ]; then
+    OUT_DIR="$ROOT_DIR/app/build/outputs/apk/release"
+  else
+    OUT_DIR="$ROOT_DIR/app/build/outputs/apk/debug"
+  fi
+fi
 log "仓库: $REPO | 来源: $SOURCE | 模式: $MODE"
+log "输出目录: $OUT_DIR"
 
 # 单实例锁：避免连续 push 时启动多个监听进程
 if command -v flock >/dev/null 2>&1; then
@@ -127,13 +136,20 @@ report_failure() {
 }
 
 download_artifact() {
-  local id="$1" tmp apk number sha label target
+  local id="$1" tmp apk number sha label target attempt
   tmp="$(mktemp -d)"
   log "下载 artifact「$ARTIFACT」…"
-  if ! gh run download "$id" --repo "$REPO" --name "$ARTIFACT" --dir "$tmp"; then
-    rm -rf "$tmp"
-    die "下载 artifact 失败（该构建可能未输出 artifact）"
-  fi
+  attempt=1
+  while ! gh run download "$id" --repo "$REPO" --name "$ARTIFACT" --dir "$tmp"; do
+    rm -rf "$tmp"; mkdir -p "$tmp"
+    if [ "$attempt" -ge 3 ]; then
+      rm -rf "$tmp"
+      die "下载 artifact 失败（已重试 3 次：网络中断或该构建未输出 artifact）"
+    fi
+    attempt=$((attempt + 1))
+    warn "下载中断，5 秒后重试（第 ${attempt}/3 次）…"
+    sleep 5
+  done
   apk="$(find "$tmp" -type f -name '*.apk' | head -n 1)"
   [ -n "$apk" ] || { rm -rf "$tmp"; die "artifact 中未找到 .apk 文件"; }
 
@@ -149,13 +165,20 @@ download_artifact() {
 }
 
 download_release() {
-  local tmp apk target
+  local tmp apk target attempt
   tmp="$(mktemp -d)"
   log "从 Release「$RELEASE_TAG」下载 APK…"
-  if ! gh release download "$RELEASE_TAG" --repo "$REPO" --pattern '*.apk' --dir "$tmp" --clobber; then
-    rm -rf "$tmp"
-    die "下载 Release 失败（Nightly 可能尚未发布）"
-  fi
+  attempt=1
+  while ! gh release download "$RELEASE_TAG" --repo "$REPO" --pattern '*.apk' --dir "$tmp" --clobber; do
+    rm -rf "$tmp"; mkdir -p "$tmp"
+    if [ "$attempt" -ge 3 ]; then
+      rm -rf "$tmp"
+      die "下载 Release 失败（已重试 3 次；Nightly 可能尚未发布）"
+    fi
+    attempt=$((attempt + 1))
+    warn "下载中断，5 秒后重试（第 ${attempt}/3 次）…"
+    sleep 5
+  done
   apk="$(find "$tmp" -type f -name '*.apk' | head -n 1)"
   [ -n "$apk" ] || { rm -rf "$tmp"; die "Release 中未找到 .apk 文件"; }
 
