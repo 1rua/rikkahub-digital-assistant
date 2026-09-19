@@ -56,6 +56,61 @@ jobs:
         working-directory: web-ui
         run: pnpm install --frozen-lockfile
 
+      - name: Mock google-services.json if not present
+        run: |
+          if [ ! -f app/google-services.json ]; then
+            cat << 'MOCK_EOF' > app/google-services.json
+          {
+            "project_info": {
+              "project_number": "1234567890",
+              "project_id": "rikkahub-mock",
+              "storage_bucket": "rikkahub-mock.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:1234567890:android:mockappid",
+                  "android_client_info": {
+                    "package_name": "me.rerere.rikkahub"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "mock_api_key"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              },
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:1234567890:android:mockappid2",
+                  "android_client_info": {
+                    "package_name": "me.rerere.rikkahub.debug"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "mock_api_key"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          MOCK_EOF
+          fi
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
